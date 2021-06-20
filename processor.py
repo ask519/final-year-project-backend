@@ -67,8 +67,6 @@ def generate_caption(photoFileName, max_length = 34):
 		# stop if we predict the end of the sequence
 		if word == 'endseq':
 			break
-	description = in_text
+	description = in_text.rsplit(' ', 1)[0].split(' ', 1)[1]
 
 	return description
-
-#print(generate_caption(photoFileName= "test.jpeg" ))
