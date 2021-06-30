@@ -7,6 +7,7 @@ import os
 from processor import generate_caption
 import random
 from pathlib import Path
+import uuid
 
 UPLOAD_FOLDER = './caption_images'
 ALLOWED_EXTENTIONS = ['jpg','jpeg','png']
@@ -25,7 +26,7 @@ def main():
             #Better handled on client side using js
 
         print(request)
-        uploaded_image = request.files["caption_image"]
+        uploaded_image = request.files.get("caption_image")
 
         #if uploaded_image.filename == '':
             #Do something if file has no name ( file not selected )
@@ -36,7 +37,9 @@ def main():
 
             #checks whether the file is actually of the same extension as mentioned
             filename = secure_filename(uploaded_image.filename)
-            filename = filename.replace('.',str(int(random.random()*10000)) + '.')
+            
+            if( len(filename) != 0):
+                filename = str(uuid.uuid4()) +"."
 
             # Contruct path for image storage
             image_storage_path = os.path.join(app.config['UPLOAD_FOLDER'], filename )
@@ -46,6 +49,9 @@ def main():
 
             #call function from caption generation script
             caption = generate_caption( photoFileName = image_storage_path)
+
+            # remove stored file after processing
+            os.remove(path=image_storage_path)
 
             return jsonify(description = caption)
 
